@@ -1,5 +1,6 @@
 package com.tutorial.restfulservice.controller;
 
+import com.tutorial.restfulservice.exception.ProductNotFoundException;
 import com.tutorial.restfulservice.model.Product;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -32,6 +33,7 @@ public class ProductController {
 
     @RequestMapping(value = "/products/{id}")
     public ResponseEntity<Object> getProductById(@PathVariable String id) {
+        if(!productRepo.containsKey(id)) throw new ProductNotFoundException();
         return new ResponseEntity<>(productRepo.get(id), HttpStatus.OK);
     }
 
@@ -44,6 +46,7 @@ public class ProductController {
     @RequestMapping(value = "/products/{id}", method = RequestMethod.PUT)
     public ResponseEntity<Object> updateProduct(@PathVariable("id") String id,
                                                 @RequestBody Product product) {
+        if(!productRepo.containsKey(id)) throw new ProductNotFoundException();
         productRepo.remove(id);
         product.setId(id);
         productRepo.put(id, product);
@@ -52,6 +55,7 @@ public class ProductController {
 
     @RequestMapping(value = "/products/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Object> delete(@PathVariable("id") String id) {
+        if(!productRepo.containsKey(id)) throw new ProductNotFoundException();
         productRepo.remove(id);
         return new ResponseEntity<>("product is deleted successfully", HttpStatus.OK);
     }
